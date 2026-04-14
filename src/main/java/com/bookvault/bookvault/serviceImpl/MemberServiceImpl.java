@@ -19,12 +19,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public ResponseDTO searchMembers(String query) {
         if (query == null || query.isBlank()) {
-            return new ResponseDTO("SUCCESS", "Members fetched successfully", Collections.emptyList());
+            return ResponseDTO.success("Members fetched successfully", Collections.emptyList());
         }
 
         String term = query.trim();
         List<Member> members = memberRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(term, term);
 
-        return new ResponseDTO("SUCCESS", "Members fetched successfully", members);
+        return ResponseDTO.success("Members fetched successfully", members);
     }
 }

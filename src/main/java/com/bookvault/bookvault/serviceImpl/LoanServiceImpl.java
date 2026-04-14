@@ -78,11 +78,7 @@ public class LoanServiceImpl implements LoanService {
             bookRepository.save(book);
             loanRepository.save(loan);
 
-            return new ResponseDTO(
-                    "SUCCESS",
-                    "Book borrowed successfully",
-                    loan.getId()
-            );
+            return ResponseDTO.success("Book borrowed successfully", loan.getId());
         }
 
 
@@ -112,11 +108,7 @@ public class LoanServiceImpl implements LoanService {
         loanRepository.save(loan);
         bookRepository.save(book);
 
-        return new ResponseDTO(
-                "SUCCESS",
-                "Book returned successfully",
-                loan.getId()
-        );
+        return ResponseDTO.success("Book returned successfully", loan.getId());
     }
 
 
@@ -133,11 +125,7 @@ public class LoanServiceImpl implements LoanService {
                 new LoanOverdueEvent(loan.getId(), loan.getMember().getEmail())
         ));
 
-        return new ResponseDTO(
-                "SUCCESS",
-                "Overdue loans fetched successfully",
-                overdueLoans
-        );
+        return ResponseDTO.success("Overdue loans fetched successfully", overdueLoans);
     }
 
     @Override
@@ -151,10 +139,6 @@ public class LoanServiceImpl implements LoanService {
 
         List<Loan> loans = loanRepository.findByMemberId(id);
 
-        return new ResponseDTO(
-                "SUCCESS",
-                "Member loan history fetched successfully",
-                loans
-        );
+        return ResponseDTO.success("Member loan history fetched successfully", loans);
     }
 }

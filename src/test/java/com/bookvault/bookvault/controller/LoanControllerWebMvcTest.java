@@ -32,7 +32,7 @@ class LoanControllerWebMvcTest {
     void borrowBook_shouldReturnSuccessResponse() throws Exception {
         UUID loanId = UUID.randomUUID();
         when(loanService.borrowBook(any()))
-                .thenReturn(new ResponseDTO("SUCCESS", "Book borrowed successfully", loanId));
+                .thenReturn(ResponseDTO.success("Book borrowed successfully", loanId));
 
         String payload = """
                 {
@@ -45,8 +45,9 @@ class LoanControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SUCCESS"))
-                .andExpect(jsonPath("$.message").value("Book borrowed successfully"))
-                .andExpect(jsonPath("$.data").value(loanId.toString()));
+                .andExpect(jsonPath("$.error").doesNotExist())
+                .andExpect(jsonPath("$.data.message").value("Book borrowed successfully"))
+                .andExpect(jsonPath("$.data.result").value(loanId.toString()))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 }

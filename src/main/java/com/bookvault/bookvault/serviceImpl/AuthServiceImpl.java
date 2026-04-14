@@ -23,13 +23,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseDTO login(String username, String password) {
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            return new ResponseDTO("ERROR", "Username and password are required", null);
+            return ResponseDTO.failure("VALIDATION_FAILED", "Username and password are required");
         }
 
         User user = userRepository.findByUsername(username).orElse(null);
 
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            return new ResponseDTO("ERROR", "Invalid username or password", null);
+            return ResponseDTO.failure("INVALID_CREDENTIALS", "Invalid username or password");
         }
 
         String token = jwtUtil.generateToken(user);
@@ -39,6 +39,6 @@ public class AuthServiceImpl implements AuthService {
         data.put("tokenType", "Bearer");
         data.put("role", user.getRole().name());
 
-        return new ResponseDTO("SUCCESS", "Login successful", data);
+        return ResponseDTO.success("Login successful", data);
     }
 }

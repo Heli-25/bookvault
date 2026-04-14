@@ -95,9 +95,11 @@ class LoanFlowIntegrationTest {
         mockMvc.perform(post("/api/loans")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("BOOK_NOT_AVAILABLE"))
-                .andExpect(jsonPath("$.data").doesNotExist());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.data").doesNotExist())
+                .andExpect(jsonPath("$.error.code").value("BOOK_NOT_AVAILABLE"))
+                .andExpect(jsonPath("$.error.message").value("BOOK_NOT_AVAILABLE"))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     private Member createMember(String email) {

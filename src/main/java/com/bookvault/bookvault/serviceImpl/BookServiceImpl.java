@@ -30,7 +30,7 @@ public class BookServiceImpl implements BookService {
         Specification<Book> filters = BookSpecification.withFilters(genre, author, available);
         List<Book> books = bookRepository.findAll(filters);
 
-        return new ResponseDTO("SUCCESS", "Books fetched successfully", books);
+        return ResponseDTO.success("Books fetched successfully", books);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class BookServiceImpl implements BookService {
         book.setAvailableCopies(dto.getTotalCopies());
 
         Book savedBook = bookRepository.save(book);
-        return new ResponseDTO("SUCCESS", "Book created successfully", savedBook);
+        return ResponseDTO.success("Book created successfully", savedBook);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class BookServiceImpl implements BookService {
         }
 
         Book updatedBook = bookRepository.save(book);
-        return new ResponseDTO("SUCCESS", "Book updated successfully", updatedBook);
+        return ResponseDTO.success("Book updated successfully", updatedBook);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new BookNotFoundException("BOOK_NOT_FOUND"));
 
         bookRepository.delete(book);
-        return new ResponseDTO("SUCCESS", "Book deleted successfully", bookId);
+        return ResponseDTO.success("Book deleted successfully", bookId);
     }
 }
 
