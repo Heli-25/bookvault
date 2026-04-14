@@ -5,6 +5,7 @@ import com.bookvault.bookvault.dto.ResponseDTO;
 import com.bookvault.bookvault.entity.Book;
 import com.bookvault.bookvault.entity.Loan;
 import com.bookvault.bookvault.entity.Member;
+import com.bookvault.bookvault.event.LoanOverdueEvent;
 import com.bookvault.bookvault.enums.LoanStatus;
 import com.bookvault.bookvault.enums.MembershipStatus;
 import com.bookvault.bookvault.exception.*;
@@ -13,6 +14,7 @@ import com.bookvault.bookvault.repository.LoanRepository;
 import com.bookvault.bookvault.repository.MemberRepository;
 import com.bookvault.bookvault.service.LoanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class LoanServiceImpl implements LoanService {
         private final LoanRepository loanRepository;
         private final BookRepository bookRepository;
         private final MemberRepository memberRepository;
+        private final ApplicationEventPublisher eventPublisher;
 
         @Override
         public ResponseDTO borrowBook(LoanDTO dto) {
@@ -116,6 +119,10 @@ public class LoanServiceImpl implements LoanService {
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Loan> overdueLoans = loanRepository
                 .findByDueDateBeforeAndStatus(LocalDateTime.now(), LoanStatus.ACTIVE, pageable);
+
+        overdueLoans.getContent().forEach(loan -> eventPublisher.publishEvent(
+                new LoanOverdueEvent(loan.getId(), loan.getMember().getEmail())
+        ));
 
         return new ResponseDTO(
                 "SUCCESS",
