@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LoanServiceImpl implements LoanService {
 
+        private static final long MAX_ACTIVE_LOANS_PER_MEMBER = 3;
 
         private final LoanRepository loanRepository;
         private final BookRepository bookRepository;
@@ -36,6 +38,7 @@ public class LoanServiceImpl implements LoanService {
         private final ApplicationEventPublisher eventPublisher;
 
         @Override
+        @Transactional
         public ResponseDTO borrowBook(LoanDTO dto) {
 
             // 1. Fetch Book
@@ -53,7 +56,12 @@ public class LoanServiceImpl implements LoanService {
 
             // 4. Validate member status
             if (member.getMembershipStatus() == MembershipStatus.SUSPENDED) {
-                throw new MemberNotFoundException("MEMBER_SUSPENDED");
+                throw new MemberSuspendedException("MEMBER_SUSPENDED");
+            }
+
+            long activeLoanCount = loanRepository.countByMemberIdAndStatus(member.getId(), LoanStatus.ACTIVE);
+            if (activeLoanCount >= MAX_ACTIVE_LOANS_PER_MEMBER) {
+                throw new ActiveLoanLimitExceededException("ACTIVE_LOAN_LIMIT_EXCEEDED");
             }
 
             // 5. Decrement available copies
@@ -67,8 +75,8 @@ public class LoanServiceImpl implements LoanService {
             loan.setDueDate(LocalDateTime.now().plusDays(14));
             loan.setStatus(LoanStatus.ACTIVE);
 
-            loanRepository.save(loan);
             bookRepository.save(book);
+            loanRepository.save(loan);
 
             return new ResponseDTO(
                     "SUCCESS",
@@ -80,6 +88,7 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
+    @Transactional
     public ResponseDTO returnBook(String loanId) {
 
         // 1. Fetch Loan

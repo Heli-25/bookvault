@@ -67,4 +67,11 @@ public class ApplicationExceptionHandler {
     public ResponseDTO handleInvalidUserRoleException(BookAlreadyReturnedException exception) {
         return new ResponseDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage(), null);
     }
+
+    @ExceptionHandler(ActiveLoanLimitExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseDTO handleActiveLoanLimitExceededException(ActiveLoanLimitExceededException exception) {
+        return new ResponseDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage(), null);
+    }
 }
