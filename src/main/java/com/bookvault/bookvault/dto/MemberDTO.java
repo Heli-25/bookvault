@@ -1,5 +1,6 @@
 package com.bookvault.bookvault.dto;
 
+import com.bookvault.bookvault.enums.MembershipStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -19,4 +20,6 @@ public class MemberDTO {
 
     @NotBlank
     private String name;
+
+    private MembershipStatus membershipStatus;
 }
