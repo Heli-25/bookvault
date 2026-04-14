@@ -7,6 +7,9 @@ import com.bookvault.bookvault.entity.Loan;
 import com.bookvault.bookvault.entity.Member;
 import com.bookvault.bookvault.enums.LoanStatus;
 import com.bookvault.bookvault.enums.MembershipStatus;
+import com.bookvault.bookvault.exception.BookNotAvailableException;
+import com.bookvault.bookvault.exception.BookNotFoundException;
+import com.bookvault.bookvault.exception.MemberNotFoundException;
 import com.bookvault.bookvault.repository.BookRepository;
 import com.bookvault.bookvault.repository.LoanRepository;
 import com.bookvault.bookvault.repository.MemberRepository;
@@ -31,20 +34,20 @@ public class LoanServiceImpl implements LoanService {
 
             // 1. Fetch Book
             Book book = bookRepository.findById(UUID.fromString(dto.getBookId()))
-                    .orElseThrow(() -> new RuntimeException("BOOK_NOT_FOUND"));
+                    .orElseThrow(() -> new BookNotFoundException("BOOK_NOT_FOUND"));
 
             // 2. Fetch Member
             Member member = memberRepository.findById(UUID.fromString(dto.getMemberId()))
-                    .orElseThrow(() -> new RuntimeException("MEMBER_NOT_FOUND"));
+                    .orElseThrow(() -> new MemberNotFoundException("MEMBER_NOT_FOUND"));
 
             // 3. Validate book availability
             if (book.getAvailableCopies() <= 0) {
-                throw new RuntimeException("BOOK_NOT_AVAILABLE");
+                throw new BookNotAvailableException("BOOK_NOT_AVAILABLE");
             }
 
             // 4. Validate member status
             if (member.getMembershipStatus() == MembershipStatus.SUSPENDED) {
-                throw new RuntimeException("MEMBER_SUSPENDED");
+                throw new MemberNotFoundException("MEMBER_SUSPENDED");
             }
 
             // 5. Decrement available copies
