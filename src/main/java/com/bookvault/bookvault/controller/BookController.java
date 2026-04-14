@@ -1,12 +1,11 @@
 package com.bookvault.bookvault.controller;
 
+import com.bookvault.bookvault.dto.BookDTO;
 import com.bookvault.bookvault.dto.ResponseDTO;
 import com.bookvault.bookvault.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/books")
@@ -20,6 +19,21 @@ public class BookController {
                                 @RequestParam(required = false) String author,
                                 @RequestParam(required = false) Boolean available) {
         return bookService.getBooks(genre, author, available);
+    }
+
+    @PostMapping
+    public ResponseDTO createBook(@Valid @RequestBody BookDTO dto) {
+        return bookService.createBook(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseDTO updateBook(@PathVariable String id, @Valid @RequestBody BookDTO dto) {
+        return bookService.updateBook(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseDTO deleteBook(@PathVariable String id) {
+        return bookService.deleteBook(id);
     }
 }
 

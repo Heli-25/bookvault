@@ -15,7 +15,8 @@ import java.util.UUID;
 @Builder
 public class Member {
 
-
+    @Id
+    @GeneratedValue
     private UUID id;
 
     @Column(unique = true, nullable = false)
