@@ -8,7 +8,7 @@ public interface LoanService {
 
     ResponseDTO returnBook(String loanId);
 
-    ResponseDTO getOverdueLoans();
+    ResponseDTO getOverdueLoans(int page, int size, String sortBy, String direction);
 
     ResponseDTO getLoansByMember(String memberId);
 }

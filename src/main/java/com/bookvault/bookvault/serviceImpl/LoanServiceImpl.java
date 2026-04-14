@@ -13,6 +13,10 @@ import com.bookvault.bookvault.repository.LoanRepository;
 import com.bookvault.bookvault.repository.MemberRepository;
 import com.bookvault.bookvault.service.LoanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -105,10 +109,13 @@ public class LoanServiceImpl implements LoanService {
 
 
     @Override
-    public ResponseDTO getOverdueLoans() {
-
-        List<Loan> overdueLoans = loanRepository
-                .findByDueDateBeforeAndStatus(LocalDateTime.now(), LoanStatus.ACTIVE);
+    public ResponseDTO getOverdueLoans(int page, int size, String sortBy, String direction) {
+        Sort sort = "desc".equalsIgnoreCase(direction)
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Loan> overdueLoans = loanRepository
+                .findByDueDateBeforeAndStatus(LocalDateTime.now(), LoanStatus.ACTIVE, pageable);
 
         return new ResponseDTO(
                 "SUCCESS",

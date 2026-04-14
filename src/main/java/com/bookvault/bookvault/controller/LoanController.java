@@ -24,7 +24,10 @@ public class LoanController {
     }
 
     @GetMapping("/overdue")
-    public ResponseDTO getOverdueLoans() {
-        return loanService.getOverdueLoans();
+    public ResponseDTO getOverdueLoans(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(defaultValue = "dueDate") String sortBy,
+                                       @RequestParam(defaultValue = "asc") String direction) {
+        return loanService.getOverdueLoans(page, size, sortBy, direction);
     }
 }
