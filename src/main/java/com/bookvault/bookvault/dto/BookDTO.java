@@ -15,6 +15,7 @@ import lombok.*;
 public class BookDTO {
     private String id;
 
+    @NotBlank(message = "ISBN is required")
     @Pattern(regexp = "978-\\d{10}", message = "Invalid ISBN format")
     private String isbn;
 

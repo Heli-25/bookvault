@@ -3,6 +3,7 @@ package com.bookvault.bookvault.controller;
 import com.bookvault.bookvault.dto.LoanDTO;
 import com.bookvault.bookvault.dto.ResponseDTO;
 import com.bookvault.bookvault.service.LoanService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class LoanController {
     private final LoanService loanService;
 
     @PostMapping
-    public ResponseDTO borrowBook(@RequestBody LoanDTO dto) {
+    public ResponseDTO borrowBook(@Valid @RequestBody LoanDTO dto) {
         return loanService.borrowBook(dto);
     }
 

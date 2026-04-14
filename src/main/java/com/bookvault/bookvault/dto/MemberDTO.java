@@ -13,6 +13,7 @@ import lombok.*;
 public class MemberDTO {
     private String id;
 
+    @NotBlank(message = "Email is required")
     @Email
     private String email;
 
