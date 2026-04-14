@@ -7,9 +7,7 @@ import com.bookvault.bookvault.entity.Loan;
 import com.bookvault.bookvault.entity.Member;
 import com.bookvault.bookvault.enums.LoanStatus;
 import com.bookvault.bookvault.enums.MembershipStatus;
-import com.bookvault.bookvault.exception.BookNotAvailableException;
-import com.bookvault.bookvault.exception.BookNotFoundException;
-import com.bookvault.bookvault.exception.MemberNotFoundException;
+import com.bookvault.bookvault.exception.*;
 import com.bookvault.bookvault.repository.BookRepository;
 import com.bookvault.bookvault.repository.LoanRepository;
 import com.bookvault.bookvault.repository.MemberRepository;
@@ -70,4 +68,37 @@ public class LoanServiceImpl implements LoanService {
                     loan.getId()
             );
         }
+
+
+
+    @Override
+    public ResponseDTO returnBook(String loanId) {
+
+        // 1. Fetch Loan
+        Loan loan = loanRepository.findById(UUID.fromString(loanId))
+                .orElseThrow(() -> new LoanNotFoundException("LOAN_NOT_FOUND"));
+
+        // 2. Check already returned
+        if (loan.getStatus() == LoanStatus.RETURNED) {
+            throw new BookAlreadyReturnedException("BOOK_ALREADY_RETURNED");
+        }
+
+        // 3. Update Loan
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnedAt(LocalDateTime.now());
+
+        // 4. Increment Book copies
+        Book book = loan.getBook();
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
+
+        // 5. Save
+        loanRepository.save(loan);
+        bookRepository.save(book);
+
+        return new ResponseDTO(
+                "SUCCESS",
+                "Book returned successfully",
+                loan.getId()
+        );
+    }
 }

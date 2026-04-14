@@ -4,10 +4,7 @@ import com.bookvault.bookvault.dto.LoanDTO;
 import com.bookvault.bookvault.dto.ResponseDTO;
 import com.bookvault.bookvault.service.LoanService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -19,5 +16,10 @@ public class LoanController {
     @PostMapping
     public ResponseDTO borrowBook(@RequestBody LoanDTO dto) {
         return loanService.borrowBook(dto);
+    }
+
+    @PutMapping("/{id}/return")
+    public ResponseDTO returnBook(@PathVariable String id) {
+        return loanService.returnBook(id);
     }
 }

@@ -1,10 +1,7 @@
 package com.bookvault.bookvault.exception.handler;
 
 import com.bookvault.bookvault.dto.ResponseDTO;
-import com.bookvault.bookvault.exception.BookNotAvailableException;
-import com.bookvault.bookvault.exception.BookNotFoundException;
-import com.bookvault.bookvault.exception.MemberNotFoundException;
-import com.bookvault.bookvault.exception.MemberSuspendedException;
+import com.bookvault.bookvault.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,6 +36,20 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseDTO handleInvalidUserRoleException(MemberSuspendedException exception) {
+        return new ResponseDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage(), null);
+    }
+
+    @ExceptionHandler(LoanNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseDTO handleInvalidUserRoleException(LoanNotFoundException exception) {
+        return new ResponseDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage(), null);
+    }
+
+    @ExceptionHandler(BookAlreadyReturnedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseDTO handleInvalidUserRoleException(BookAlreadyReturnedException exception) {
         return new ResponseDTO(String.valueOf(HttpStatus.BAD_REQUEST.value()), exception.getMessage(), null);
     }
 }

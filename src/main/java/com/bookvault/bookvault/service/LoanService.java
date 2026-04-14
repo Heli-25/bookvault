@@ -6,4 +6,6 @@ import com.bookvault.bookvault.dto.ResponseDTO;
 public interface LoanService {
     ResponseDTO borrowBook(LoanDTO dto);
 
+    ResponseDTO returnBook(String loanId);
+
 }
