@@ -19,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +94,8 @@ public class LoanServiceImpl implements LoanService {
         Loan loan = loanRepository.findById(UUID.fromString(loanId))
                 .orElseThrow(() -> new LoanNotFoundException("LOAN_NOT_FOUND"));
 
+        validateMemberCanAccessOwnLoan(loan);
+
         // 2. Check already returned
         if (loan.getStatus() == LoanStatus.RETURNED) {
             throw new BookAlreadyReturnedException("BOOK_ALREADY_RETURNED");
@@ -134,11 +139,49 @@ public class LoanServiceImpl implements LoanService {
         UUID id = UUID.fromString(memberId);
 
         // optional validation (recommended)
-        memberRepository.findById(id)
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException("MEMBER_NOT_FOUND"));
+
+        validateMemberCanAccessOwnMemberData(member);
 
         List<Loan> loans = loanRepository.findByMemberId(id);
 
         return ResponseDTO.success("Member loan history fetched successfully", loans);
+    }
+
+    private void validateMemberCanAccessOwnLoan(Loan loan) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return;
+        }
+
+        boolean isMemberRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_MEMBER".equals(authority.getAuthority()));
+        if (!isMemberRole) {
+            return;
+        }
+
+        String username = authentication.getName();
+        if (loan.getMember() == null || loan.getMember().getEmail() == null || !loan.getMember().getEmail().equalsIgnoreCase(username)) {
+            throw new AccessDeniedException("MEMBER_CAN_ONLY_ACCESS_OWN_LOANS");
+        }
+    }
+
+    private void validateMemberCanAccessOwnMemberData(Member member) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return;
+        }
+
+        boolean isMemberRole = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_MEMBER".equals(authority.getAuthority()));
+        if (!isMemberRole) {
+            return;
+        }
+
+        String username = authentication.getName();
+        if (member.getEmail() == null || !member.getEmail().equalsIgnoreCase(username)) {
+            throw new AccessDeniedException("MEMBER_CAN_ONLY_ACCESS_OWN_LOANS");
+        }
     }
 }

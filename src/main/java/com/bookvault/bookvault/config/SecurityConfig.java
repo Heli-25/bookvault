@@ -28,8 +28,13 @@ public class SecurityConfig {
                         // public
                         .requestMatchers("/api/auth/login").permitAll()
 
-                        // librarian full access
-                        .requestMatchers("/api/**").hasAnyRole("LIBRARIAN", "MEMBER")
+                        // member allowed reads
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/books/**").hasAnyRole("LIBRARIAN", "MEMBER")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/members/*/loans").hasAnyRole("LIBRARIAN", "MEMBER")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/loans/*/return").hasAnyRole("LIBRARIAN", "MEMBER")
+
+                        // librarian-only operations
+                        .requestMatchers("/api/**").hasRole("LIBRARIAN")
 
                         .anyRequest().authenticated()
                 )

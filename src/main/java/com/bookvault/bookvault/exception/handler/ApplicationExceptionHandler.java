@@ -2,6 +2,7 @@ package com.bookvault.bookvault.exception.handler;
 
 import com.bookvault.bookvault.dto.ResponseDTO;
 import com.bookvault.bookvault.exception.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -58,6 +59,11 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(ActiveLoanLimitExceededException.class)
     public ResponseEntity<ResponseDTO> handleActiveLoanLimitExceededException(ActiveLoanLimitExceededException exception) {
         return buildErrorResponse(HttpStatus.CONFLICT, "ACTIVE_LOAN_LIMIT_EXCEEDED", exception.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseDTO> handleAccessDeniedException(AccessDeniedException exception) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "ACCESS_DENIED", exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
