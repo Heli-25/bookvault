@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -99,6 +100,20 @@ public class LoanServiceImpl implements LoanService {
                 "SUCCESS",
                 "Book returned successfully",
                 loan.getId()
+        );
+    }
+
+
+    @Override
+    public ResponseDTO getOverdueLoans() {
+
+        List<Loan> overdueLoans = loanRepository
+                .findByDueDateBeforeAndStatus(LocalDateTime.now(), LoanStatus.ACTIVE);
+
+        return new ResponseDTO(
+                "SUCCESS",
+                "Overdue loans fetched successfully",
+                overdueLoans
         );
     }
 }

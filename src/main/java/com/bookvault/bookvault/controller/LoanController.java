@@ -22,4 +22,9 @@ public class LoanController {
     public ResponseDTO returnBook(@PathVariable String id) {
         return loanService.returnBook(id);
     }
+
+    @GetMapping("/overdue")
+    public ResponseDTO getOverdueLoans() {
+        return loanService.getOverdueLoans();
+    }
 }
