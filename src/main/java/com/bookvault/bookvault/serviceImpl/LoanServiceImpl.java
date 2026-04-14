@@ -116,4 +116,22 @@ public class LoanServiceImpl implements LoanService {
                 overdueLoans
         );
     }
+
+    @Override
+    public ResponseDTO getLoansByMember(String memberId) {
+
+        UUID id = UUID.fromString(memberId);
+
+        // optional validation (recommended)
+        memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("MEMBER_NOT_FOUND"));
+
+        List<Loan> loans = loanRepository.findByMemberId(id);
+
+        return new ResponseDTO(
+                "SUCCESS",
+                "Member loan history fetched successfully",
+                loans
+        );
+    }
 }

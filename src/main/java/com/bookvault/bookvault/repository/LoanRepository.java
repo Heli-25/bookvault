@@ -14,4 +14,6 @@ public interface LoanRepository extends JpaRepository<Loan, UUID> {
 
     List<Loan> findByDueDateBeforeAndStatus(LocalDateTime date, LoanStatus status);
 
+    List<Loan> findByMemberId(UUID memberId);
+
 }
